@@ -46,11 +46,14 @@ def pick_collection(collections):
         if c.startswith('aroundtheworld'):
             return c
 
+        # these are here to keep things silent
         if c.startswith('nsdlweb'):
             return None
         if c.startswith('customcrawlservices'):
             return None
         if c.startswith('accelovation'):
+            return None
+        if c.startswith('crawl_UNK'):
             return None
 
     print('returning none for', collections)
@@ -156,6 +159,7 @@ def getinfo():
 
     last_sha1 = ''
     for row in table:
+        print('code is', row['code'])
         if row['code'] == '404':
             change = '404'
         elif row['code'].startswith('3'):
@@ -175,6 +179,5 @@ def getinfo():
         captures.append(outrow)
 
     return { 'captures': captures }
-
 
 run(host='0.0.0.0', port=8081, reloader=reloader)
