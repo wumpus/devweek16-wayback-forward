@@ -109,6 +109,9 @@ def getinfo():
     endpoint = 'http://' + cdx_server + '/web/timemap/cdx'
     endpoint += '?' + urllib.parse.urlencode({ 'url': url })
 
+    req = urllib.request.Request(endpoint)
+    req.add_header('Cookie', 'cdx_auth_token='+cdx_secret)
+
     with urllib.request.urlopen(req) as response:
         lines = response.read().decode('utf-8').splitlines()
 
