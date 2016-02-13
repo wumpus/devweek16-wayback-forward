@@ -23,7 +23,7 @@
 
 	<form id="searchbox" action="">
 	    <input id="search" type="text" placeholder="Type here">
-	    <input id="submit" type="submit" value="Search">
+	    <input id="submit" value="Search">
 	</form>
 
 	<h1 id="websiteName">Name of Website</h1>
@@ -56,22 +56,22 @@
 
 <script type="text/javascript">
 	$(document).ready(function() {
-		doAjaxCall();
+		setupAjaxCall();
 	 	setWebsiteName();
 	 	// createD3View();
 	});
 
-	function doAjaxCall() {
+	function setupAjaxCall() {
 		$('#submit').click(function() {
 			var websiteUrl = document.getElementById("search").value;
-			$.getJSON("getinfo"), {
+	                setWebsiteName("loading...");
+			$.getJSON("getinfo", {
 				url: websiteUrl
 			}, function(sdata) {
-				// consolde.log();
-				var data = sdata.error ? [] : sdata.getinfo;
+				var data = sdata.error ? [] : sdata.captures;
 				createData(data);
 				setWebsiteName(websiteUrl);
-			}
+			});
 		});
 	}
 
@@ -96,13 +96,13 @@
 
 	function createData(data) {
 
-		var obj = JSON.parse(data);
+		var obj = data;
 
 		function createDataTable() {
 			var tableRef = document.getElementById('urlDataTable').getElementsByTagName('tbody')[0];
-			for (var i = 0; i < obj.captures.length; i++) {
+			for (var i = 0; i < obj.length; i++) {
 
-				var object = obj.captures[i];
+				var object = obj[i];
 				var newRow = tableRef.insertRow(tableRef.rows.length);
 
 				var formattedTime = object.date
@@ -134,6 +134,7 @@
 				}
 			}
 		}
+		createDataTable();
 	}
 
 </script>
