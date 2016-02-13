@@ -17,6 +17,8 @@
 <body >
 <div id="main">
 
+	<div id="demo">
+
 <div class="scrollable-table">
 
 	<form id="searchbox" action="">
@@ -54,47 +56,53 @@
 
 <script type="text/javascript">
 	$(document).ready(function() {
+		doAjaxCall();
 	 	setWebsiteName();
-	 	createData();
-	 	// createASD();
+	 	// createD3View();
 	});
 
-	// function createASD() {
+	function doAjaxCall() {
+		$('#submit').click(function() {
+			var websiteUrl = document.getElementById("search").value;
+			$.getJSON("getinfo"), {
+				url: websiteUrl
+			}, function(sdata) {
+				// consolde.log();
+				var data = sdata.error ? [] : sdata.getinfo;
+				createData(data);
+				setWebsiteName(websiteUrl);
+			}
+		});
+	}
+
+	// function createD3View() {
 	// 	var data = [
-	// 	  { name: "http requests", dates: [new Date('2014/09/15 13:24:54'), new Date('2014/09/15 13:25:03'), new Date('2014/09/15 13:25:05'), ...] },
-	// 	  { name: "SQL queries", dates: [new Date('2014/09/15 13:24:57'), new Date('2014/09/15 13:25:04'), new Date('2014/09/15 13:25:04'), ...] },
-	// 	  { name: "cache invalidations", dates: [new Date('2014/09/15 13:25:12'), ...] }
+	// 	  { name: "http requests", dates: [new Date('2014/09/15 13:24:54'), new Date('2014/09/15 13:25:03'), new Date('2014/09/15 13:25:05')] },
+	// 	  { name: "SQL queries", dates: [new Date('2014/09/15 13:24:57'), new Date('2014/09/15 13:25:04'), new Date('2014/09/15 13:25:04')] },
+	// 	  { name: "cache invalidations", dates: [new Date('2014/09/15 13:25:12')] }
 	// 	];
 
-	// 	var eventDropsChart = d3.chart.eventDrops();
-	// 	d3.select('#chart_placeholder')
+	// 	var eventDropsChart = d3.chart.eventDrops()
+	// 		.width(900)
+ //  			.hasTopAxis(true);
+	// 	d3.select('#main')
 	// 	  .datum(data)
 	// 	  .call(eventDropsChart);
 	// }
 
-	function setWebsiteName() {
-		document.getElementById("websiteName").innerHTML = "New Website Name";
+	function setWebsiteName(name) {
+		document.getElementById("websiteName").innerHTML = name;
 	}
 
+	function createData(data) {
 
-	function createData() {
-		
-		var text = '{ "data" : [' +
-'{ "date":"1455394949" , "why":"Y" , "change":"minor" },' +
-'{ "date":"1455396949" , "why":"Some reason", "change":"major" },' +
-'{ "date":"1453376459" , "why":"Some reason", "change":"none" },' +
-'{ "date":"1455396949" , "why":"Some reason", "change":"none" },' +
-'{ "date":"1452336949" , "why":"Some reason", "change":"none" },' +
-'{ "date":"1451366949" , "why":"Some reason", "change":"404" },' +
-'{ "date":"1455694949" , "why":"Some other reason", "change":"404" } ]}';
-
-		var obj = JSON.parse(text);
+		var obj = JSON.parse(data);
 
 		function createDataTable() {
 			var tableRef = document.getElementById('urlDataTable').getElementsByTagName('tbody')[0];
-			for (var i = 0; i < obj.data.length; i++) {
+			for (var i = 0; i < obj.captures.length; i++) {
 
-				var object = obj.data[i];
+				var object = obj.captures[i];
 				var newRow = tableRef.insertRow(tableRef.rows.length);
 
 				var formattedTime = object.date
@@ -119,84 +127,13 @@
 					newRow.style.backgroundColor = '#FFFF00';
 				} else if (object.change == "major") {
 					newRow.style.backgroundColor = '#02BBBB';
-				} else if (object.change == "redirect") {
+				} else if (object.change == "redir") {
 					newRow.style.backgroundColor = '#D3D3D3';
 				} else if (object.change == "404") {
 					newRow.style.backgroundColor = '#FF0000';
 				}
 			}
 		}
-
-		createDataTable()
-
-		// function bestUsers() {
-		// 	var User = Parse.Object.extend("User");
-		// 	var query = new Parse.Query(User);
-		// 	query.descending("LoginCount");
-		// 	query.notContainedIn("objectId", OurUserIds);
-		// 	query.limit(40);
-		// 	query.find({
-		// 	  success: function(results) {
-
-		// 		var tableRef = document.getElementById('urlDataTable').getElementsByTagName('tbody')[0];
-
-		// 	  	for (var i = 0; i < results.length; i++) {
-		// 	  		var result = results[i];
-
-		// 			// Insert a row in the table at the last row
-		// 			var newRow   = tableRef.insertRow(tableRef.rows.length);
-
-		// 			var newCell  = newRow.insertCell(0);
-		// 			var objectId  = document.createTextNode(result.id);
-		// 			newCell.appendChild(objectId);
-
-		// 			var newCell1  = newRow.insertCell(1);
-		// 			var nickname  = document.createTextNode(result.get("Nickname"));
-		// 			newCell1.appendChild(nickname);
-
-		// 			var newCell2  = newRow.insertCell(2);
-		// 			var who  = document.createTextNode(result.get("Who"));
-		// 			newCell2.appendChild(who);
-
-		// 			var newCell3  = newRow.insertCell(3);
-		// 			var swipeCount = result.get("TotalSpreadCount") + result.get("TotalSkipCount")
-		// 			var totalSwipeCount  = document.createTextNode(swipeCount);
-		// 			newCell3.appendChild(totalSwipeCount);
-
-		// 			var newCell4  = newRow.insertCell(4);
-		// 			var totalUploadCount  = document.createTextNode(result.get("TotalUploadCount"));
-		// 			newCell4.appendChild(totalUploadCount);
-
-		// 			var newCell5  = newRow.insertCell(5);
-		// 			var totalCommentCount  = document.createTextNode(result.get("TotalCommentCount"));
-		// 			newCell5.appendChild(totalCommentCount);
-
-		// 			var newCell6  = newRow.insertCell(6);
-		// 			var loginCount  = document.createTextNode(result.get("LoginCount"));
-		// 			newCell6.appendChild(loginCount);
-
-		// 			var d = new Date();
-		// 			var time = (7 * 24 * 3600 * 1000); // 7 days
-		// 			var interval = new Date(d.getTime() - (time));
-
-		// 			var lastLoginDate = result.get("LoginDate");
-
-		// 			if (swipeCount == totalPostCount) {
-		// 				newRow.style.backgroundColor = '#FF0000';
-		// 			} else if (swipeCount > totalPostCount - 40) {
-		// 				newRow.style.backgroundColor = '#FFFF00';
-		// 			}
-
-		// 			if (lastLoginDate < interval || lastLoginDate === undefined) {
-		// 				newRow.style.backgroundColor = '#02BBBB';
-		// 			}
-		// 	  	};
-		// 	  },
-		// 	  error: function(error) {
-		// 	    // The request failed
-		// 	  }
-		// 	});
-		// }
 	}
 
 </script>
