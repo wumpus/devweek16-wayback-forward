@@ -105,18 +105,18 @@
 		];
 		
 		// Distributes the data to according row
-		for (i = 0; i < data.length, i++) {
+		for (i = 0; i < data.length; i++) {
 			var newDate = formatTime(data[i].date)
 
-			if (data.change == "none") {
+			if (data[i].change == "none") {
 				newData[0].dates.push(newDate)
-			} else if (data.change == "minor") {
+			} else if (data[i].change == "minor") {
 				newData[1].dates.push(newDate)
-			} else if (data.change == "major") {
+			} else if (data[i].change == "major") {
 				newData[2].dates.push(newDate)
-			} else if (data.change == "redir") {
+			} else if (data[i].change == "redir") {
 				newData[3].dates.push(newDate)
-			} else if (data.change == "404") {
+			} else if (data[i].change == "404") {
 				newData[4].dates.push(newDate)
 			}
 		}
@@ -137,7 +137,7 @@
 			.start(newDate)
   			.hasTopAxis(true);
   		eventDropsChart.width(900);
-		d3.select('#tableHolder')
+		d3.select('#table-holder')
 		  .datum(newData)
 		  .call(eventDropsChart);
 	}
