@@ -138,6 +138,7 @@ def getinfo():
         length = fields[8] # this is the lenth of the content plus the WARC header!
         item, filename = fields[10].split('/', maxsplit=1)
 
+        # I should probably include these as 'no change' XXX
         if rec == 'warc/revisit':
             continue
 
