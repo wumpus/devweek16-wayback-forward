@@ -39,7 +39,14 @@ body {
     line-height: 13px;
 }
 
-/************************************** Table ******************************************/
+#table-holder {
+    width: auto;
+    margin: auto;
+    text-align: center;
+
+}
+
+/************************************** OldSchool Table ******************************************/
 
 .table-header-rotated th.row-header{
   width: auto;
@@ -146,4 +153,62 @@ body {
 #search.placeholder {
    color: #9c9c9c !important;
    font-style: italic;
+}
+
+/************************************** D3 Table  **************************************/
+
+.zoom-area {
+    fill: transparent;
+    cursor: pointer;
+}
+
+.zoom {
+    fill: transparent;
+    cursor: pointer;
+}
+
+.y-tick {
+    stroke: black;
+    fill: none;
+    stroke-width: 1px;
+}
+
+.line-separator, .x-axis
+{
+    stroke: black;
+    fill: none;
+    stroke-width: 1px;
+}
+
+.line-separator:last-child {
+    display: none;
+}
+
+.x-axis {
+    position: absolute;
+    z-index: 50;
+}
+
+text {
+    stroke: none;
+    fill: black;
+}
+
+.graph-body .line {
+    height: 20px;
+    padding: 10px;
+    background-color: white;
+}
+
+.drops-container {
+    clip-path: url(#drops-container);
+}
+
+.svg {
+    width: 400;
+}
+
+svg[Attributes Style] {
+    width: 200;
+    height: 300;
 }

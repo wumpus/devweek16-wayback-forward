@@ -21,13 +21,18 @@
 
 <div class="scrollable-table">
 
-	<form id="searchbox" action="">
+	<form id="searchbox" >
 	    <input id="search" type="text" placeholder="Type here">
-	    <input id="submit" value="Search">
+	    <input id="submit" type="button" value="Search">
 	</form>
 
 	<h1 id="websiteName">Name of Website</h1>
-	<form name="webPageData">
+
+	<div id="table-holder">
+
+	</div>
+
+	<!-- <form name="webPageData">
 
 	<div id="rectangle" style="width:20px; height:20px; background-color:#FFFF00; float:left"></div> 
 	  <div style="float:left;margin-left: 0.1cm;">Minor</div><br>
@@ -46,58 +51,109 @@
 	        <th><div><span>Change</span></div></th>
 	      </tr>
 	    </thead>
-	    <tbody>
+	    <tbody id="tableBody">
 	  	</tbody>
 	</table>
 	<br>
-	  
-	</form>
+	</form> -->
+
 </div>
 
 <script type="text/javascript">
 	$(document).ready(function() {
+		// alert("window loaded");
 		setupAjaxCall();
-	 	setWebsiteName();
 	 	// createD3View();
 	});
 
 	function setupAjaxCall() {
 		$('#submit').click(function() {
 			var websiteUrl = document.getElementById("search").value;
-	                setWebsiteName("loading...");
+	        setWebsiteName("loading...");
+	        // clearTable();
+
 			$.getJSON("getinfo", {
 				url: websiteUrl
 			}, function(sdata) {
 				var data = sdata.error ? [] : sdata.captures;
-				createData(data);
+				createD3View(data);
 				setWebsiteName(websiteUrl);
 			});
 		});
 	}
 
-	// function createD3View() {
-	// 	var data = [
-	// 	  { name: "http requests", dates: [new Date('2014/09/15 13:24:54'), new Date('2014/09/15 13:25:03'), new Date('2014/09/15 13:25:05')] },
-	// 	  { name: "SQL queries", dates: [new Date('2014/09/15 13:24:57'), new Date('2014/09/15 13:25:04'), new Date('2014/09/15 13:25:04')] },
-	// 	  { name: "cache invalidations", dates: [new Date('2014/09/15 13:25:12')] }
-	// 	];
+	function formatTime(str) {
+		var year = str.substring(0, 4);
+		var month = str.substring(4, 6);
+		var day = str.substring(6, 8);
+		var hour = str.substring(8, 10);
+		var minute = str.substring(10, 12);
+		var second = str.substring(12, 14);
+		var milliseconds = 0;
 
-	// 	var eventDropsChart = d3.chart.eventDrops()
-	// 		.width(900)
- //  			.hasTopAxis(true);
-	// 	d3.select('#main')
-	// 	  .datum(data)
-	// 	  .call(eventDropsChart);
-	// }
+		var newDate = new Date(year, month, day, hour, minute, second, milliseconds);
+		return newDate;
+	}
+
+	function createD3View(data) {
+		var newData = [
+			{name: "None", dates: []},
+			{name: "Minor", dates: []},
+			{name: "Major", dates: []},
+			{name: "Redirect", dates: []},
+			{name: "404", dates: []}
+		];
+		
+		// Distributes the data to according row
+		for (i = 0; i < data.length, i++) {
+			var newDate = formatTime(data[i].date)
+
+			if (data.change == "none") {
+				newData[0].dates.push(newDate)
+			} else if (data.change == "minor") {
+				newData[1].dates.push(newDate)
+			} else if (data.change == "major") {
+				newData[2].dates.push(newDate)
+			} else if (data.change == "redir") {
+				newData[3].dates.push(newDate)
+			} else if (data.change == "404") {
+				newData[4].dates.push(newDate)
+			}
+		}
+
+		var testData = [
+		  { name: "Why", dates: [new Date('2014/09/15 13:24:54'), new Date('2014/09/15 13:25:03'), new Date('2014/09/15 13:25:05')] },
+		  { name: "Minor", dates: [new Date('2014/09/15 13:24:57'), new Date('2014/09/15 13:25:04'), new Date('2014/09/15 13:25:04')] },
+		  { name: "Major", dates: [new Date('2014/09/15 13:25:12')] },
+		  { name: "Redirect", dates: [new Date('2015/09/15 13:25:12')] },
+		  { name: "404", dates: [new Date('2016/09/15 13:25:12')] }
+		];
+
+		var newDate = new Date(1995, 1, 1, 1, 1, 1, 1);
+
+		var eventDropsChart = d3.chart.eventDrops()
+			.width(900)
+			.eventColor("#FF0000")
+			.start(newDate)
+  			.hasTopAxis(true);
+  		eventDropsChart.width(900);
+		d3.select('#tableHolder')
+		  .datum(newData)
+		  .call(eventDropsChart);
+	}
 
 	function setWebsiteName(name) {
 		document.getElementById("websiteName").innerHTML = name;
 	}
 
+	function clearTable() {
+		$("#tableBody tr").remove();
+	}
+
 	function createData(data) {
 
 		var obj = data;
-
+		
 		function createDataTable() {
 			var tableRef = document.getElementById('urlDataTable').getElementsByTagName('tbody')[0];
 			for (var i = 0; i < obj.length; i++) {
