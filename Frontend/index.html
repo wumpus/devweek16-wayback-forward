@@ -118,9 +118,9 @@
 
 	function createD3View(data) {
 		var newData = [
-			{name: "None", dates: [], color: "#AAAAAA"},
-			{name: "Minor", dates: [], color: "#F9FB2E"},
 			{name: "Major", dates: [], color: "#1AB41B"},
+			{name: "Minor", dates: [], color: "#F9FB2E"},
+			{name: "None", dates: [], color: "#AAAAAA"},
 			{name: "Redirect", dates: [], color: "#7120C7"},
 			{name: "404", dates: [], color: "#FF0000"}
 		];
@@ -130,11 +130,11 @@
 			var newDate = formatTime(data[i].date)
 
 			if (data[i].change == "none") {
-				newData[0].dates.push(newDate)
+				newData[2].dates.push(newDate)
 			} else if (data[i].change == "minor") {
 				newData[1].dates.push(newDate)
 			} else if (data[i].change == "major") {
-				newData[2].dates.push(newDate)
+				newData[0].dates.push(newDate)
 			} else if (data[i].change == "redir") {
 				newData[3].dates.push(newDate)
 			} else if (data[i].change == "404") {
