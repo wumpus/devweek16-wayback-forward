@@ -22,12 +22,21 @@
 
 <div class="scrollable-table">
 
+	<!-- <h1 id="title">Wayback Forward</h1> -->
+
+	<div id="box">
+	  <p id="flashlight">
+	    <span id="flash">Wayback</span>
+	    <span id="light">Forward</span>
+	  </p>
+	</div>
+
 	<form id="searchbox" >
 	    <input id="search" type="text" placeholder="Type here">
 	    <input id="submit" type="button" value="Search">
 	</form>
 
-	<h1 id="websiteName"></h1>
+	<h1 id="websiteName"></h1><br>
 
 	<div id="table-holder">
 
@@ -67,9 +76,12 @@
 
 <script type="text/javascript">
 	$(document).ready(function() {
-		// alert("window loaded");
 		setupAjaxCall();
+
+		// testing stuff
+		// alert("window loaded");
 	 	// createD3View();
+	 	// setWebsiteName("loading...");
 	});
 
 	var globalUrl;
@@ -139,7 +151,7 @@
 		var newDate = new Date(1995, 1, 1, 1, 1, 1, 1);
 
 		var eventDropsChart = d3.chart.eventDrops()
-			.width(700)
+			.width(900)
 			.margin({ top: 60, left: 110, bottom: 0, right: 50 })
 			.eventLineColor(function(e) {
 				console.log(e);
@@ -152,7 +164,7 @@
 				var timestamp = d3.select(el).data()[0];
 				var waybackUrl = returnWaybackLink(globalUrl, timestamp);
 	console.log('waybackurl is ' + waybackUrl);
-				var link = '<a href="' + waybackUrl + '">' + 'asdfasdf' + '</a>';
+				var link = '<a href="' + waybackUrl + '">' + timestamp + '</a>';
 	console.log('link is ' + link);
 				document.getElementById('hovering').innerHTML = link;
 			})
@@ -167,7 +179,7 @@
 
 	function returnWaybackLink(url, date) {
 		var year = date.getFullYear();
-		var month = date.getMonth();
+		var month = date.getMonth() + 1; // omg what were they thinking
 		var day = date.getDay();
 		var hours = date.getHours();
 		var minutes = date.getMinutes();
