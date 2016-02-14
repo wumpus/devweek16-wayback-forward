@@ -7,11 +7,15 @@ import urllib.request
 from operator import itemgetter
 from internetarchive import get_item
 import json
+from surt import surt as makesurt
 from bottle import route, request, response, run, static_file, redirect
 
 reloader=True
 
 def pick_collection(collections):
+    if isinstance(collections, str):
+        collections = [ collections ]
+
     for c in collections:
         if c.startswith('alexacrawls'):
             return c
@@ -45,6 +49,8 @@ def pick_collection(collections):
             return c
         if c.startswith('aroundtheworld'):
             return c
+        if c.startswith('geocities'):
+            return c
 
         # these are here to keep things silent
         if c.startswith('nsdlweb'):
@@ -54,6 +60,8 @@ def pick_collection(collections):
         if c.startswith('accelovation'):
             return None
         if c.startswith('crawl_UNK'):
+            return None
+        if c.startswith('internetmemoryfoundation'):
             return None
 
     print('returning none for', collections)
@@ -122,12 +130,20 @@ def getinfo():
 
     for line in lines:
         fields = line.split(' ')
+        surt = fields[0]
         date = fields[1]
+        orig = fields[2]
         code = fields[4]
         sha1 = fields[5]
+        length = fields[8]
         item, filename = fields[10].split('/', maxsplit=1)
 
-        row = { 'date': date, 'code': code, 'sha1': sha1, 'item': item }
+        # begone: 302 redirs from www->non and non->www, 301 redirs for foo to foo/
+        if code.startswith('3'):
+            if surt == makesurt(orig):
+                continue
+
+        row = { 'date': date, 'code': code, 'sha1': sha1, 'length': length, 'item': item }
         table.append(row)
 
     table = sorted(table, key=itemgetter('date'))
@@ -157,19 +173,31 @@ def getinfo():
 
         os.rename(os.path.expanduser('~/.item_to_collection.new'), os.path.expanduser('~/.item_to_collection'))
 
-    last_sha1 = ''
+    last_200_sha1 = ''
+    last_200_length = 0
     for row in table:
-        print('code is', row['code'])
         if row['code'] == '404':
             change = '404'
         elif row['code'].startswith('3'):
             change = 'redir'
-        elif row['sha1'] != last_sha1:
+        elif row['sha1'] != last_200_sha1:
             change = 'minor'
+            try:
+                diff = abs(int(last_200_length) - int(row['length']))
+            except:
+                diff = 10000
+
+            # when in doubt, use the worst available algorithm!
+            if diff > 500:
+                change = 'major'
+            print('date', row['date'], change, 'change, diff is', diff)
+            last_200_sha1 = row['sha1']
+            last_200_length = row['length']
         else:
             change = 'none'
+            last_200_sha1 = row['sha1']
+            last_200_length = row['length']
         row['change'] = change
-        last_sha1 = row['sha1']
 
     captures = []
     for row in table:
