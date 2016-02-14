@@ -152,7 +152,7 @@
 				var timestamp = d3.select(el).data()[0];
 				var waybackUrl = returnWaybackLink(globalUrl, timestamp);
 	console.log('waybackurl is ' + waybackUrl);
-				var link = '<a href="' + waybackUrl + '">' + 'asdfasdf' + '</a>';
+				var link = '<a href="' + waybackUrl + '">' + timestamp + '</a>';
 	console.log('link is ' + link);
 				document.getElementById('hovering').innerHTML = link;
 			})
@@ -167,7 +167,7 @@
 
 	function returnWaybackLink(url, date) {
 		var year = date.getFullYear();
-		var month = date.getMonth();
+		var month = date.getMonth() + 1; // omg what were they thinking
 		var day = date.getDay();
 		var hours = date.getHours();
 		var minutes = date.getMinutes();
