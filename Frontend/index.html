@@ -11,6 +11,7 @@
 
 	<script src="d3.v3.min.js" charset="utf-8"></script>
 	<script src="src/eventDrops.js"></script>
+	<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 
 </head>
 
@@ -32,6 +33,11 @@
 
 	</div>
 
+	<h3>
+	<div id="hovering">
+
+	</div>
+	</h3>
 	<!-- <form name="webPageData">
 
 	<div id="rectangle" style="width:20px; height:20px; background-color:#FFFF00; float:left"></div> 
@@ -70,8 +76,6 @@
 		$('#submit').click(function() {
 			var websiteUrl = document.getElementById("search").value;
 	        setWebsiteName("loading...");
-	        // clearTable();
-
 			$.getJSON("getinfo", {
 				url: websiteUrl
 			}, function(sdata) {
@@ -97,11 +101,11 @@
 
 	function createD3View(data) {
 		var newData = [
-			{name: "None", dates: []},
-			{name: "Minor", dates: []},
-			{name: "Major", dates: []},
-			{name: "Redirect", dates: []},
-			{name: "404", dates: []}
+			{name: "None", dates: [], color: "#AAAAAA"},
+			{name: "Minor", dates: [], color: "#F9FB2E"},
+			{name: "Major", dates: [], color: "#1AB41B"},
+			{name: "Redirect", dates: [], color: "#7120C7"},
+			{name: "404", dates: [], color: "#FF0000"}
 		];
 		
 		// Distributes the data to according row
@@ -122,21 +126,30 @@
 		}
 
 		var testData = [
-		  { name: "Why", dates: [new Date('2014/09/15 13:24:54'), new Date('2014/09/15 13:25:03'), new Date('2014/09/15 13:25:05')] },
-		  { name: "Minor", dates: [new Date('2014/09/15 13:24:57'), new Date('2014/09/15 13:25:04'), new Date('2014/09/15 13:25:04')] },
-		  { name: "Major", dates: [new Date('2014/09/15 13:25:12')] },
-		  { name: "Redirect", dates: [new Date('2015/09/15 13:25:12')] },
-		  { name: "404", dates: [new Date('2016/09/15 13:25:12')] }
+		  { name: "Why", dates: [new Date('2014/09/15 13:24:54'), new Date('2014/09/15 13:25:03'), new Date('2014/09/15 13:25:05')], color: "#AAAAAA" },
+		  { name: "Minor", dates: [new Date('2014/09/15 13:24:57'), new Date('2014/09/15 13:25:04'), new Date('2014/09/15 13:25:04')], color: "#F9FB2E" },
+		  { name: "Major", dates: [new Date('2014/09/15 13:25:12')], color: "#1AB41B" },
+		  { name: "Redirect", dates: [new Date('2015/09/15 13:25:12')], color: "#7120C7" },
+		  { name: "404", dates: [new Date('2016/09/15 13:25:12')], color: "#FF0000" }
 		];
 
 		var newDate = new Date(1995, 1, 1, 1, 1, 1, 1);
 
 		var eventDropsChart = d3.chart.eventDrops()
-			.width(900)
-			.eventColor("#FF0000")
+			.width(700)
+			.margin({ top: 60, left: 110, bottom: 0, right: 50 })
+			.eventLineColor(function(e) {
+				console.log(e);
+		    return e.color;
+		    })
 			.start(newDate)
+			.eventHover(function(el) {
+				var series = el.parentNode.firstChild.innerHTML;
+				var timestamp = d3.select(el).data()[0];
+				document.getElementById('hovering').innerHTML = '<a href="https://web.archive.org/web/19970207194948/http://www.pbm.com/~lindahl/">' + timestamp + '</a> in series "' + series + '"';
+			})
   			.hasTopAxis(true);
-  		eventDropsChart.width(900);
+		
 		d3.select('#table-holder')
 		  .datum(newData)
 		  .call(eventDropsChart);
@@ -146,52 +159,52 @@
 		document.getElementById("websiteName").innerHTML = name;
 	}
 
-	function clearTable() {
-		$("#tableBody tr").remove();
-	}
+	// function clearTable() {
+	// 	$("#tableBody tr").remove();
+	// }
 
-	function createData(data) {
+	// function createData(data) {
 
-		var obj = data;
+	// 	var obj = data;
 		
-		function createDataTable() {
-			var tableRef = document.getElementById('urlDataTable').getElementsByTagName('tbody')[0];
-			for (var i = 0; i < obj.length; i++) {
+	// 	function createDataTable() {
+	// 		var tableRef = document.getElementById('urlDataTable').getElementsByTagName('tbody')[0];
+	// 		for (var i = 0; i < obj.length; i++) {
 
-				var object = obj[i];
-				var newRow = tableRef.insertRow(tableRef.rows.length);
+	// 			var object = obj[i];
+	// 			var newRow = tableRef.insertRow(tableRef.rows.length);
 
-				var formattedTime = object.date
+	// 			var formattedTime = object.date
 
-				var cell1 = newRow.insertCell(0);
-				var objectId = document.createTextNode(formattedTime);
-				cell1.appendChild(objectId);
+	// 			var cell1 = newRow.insertCell(0);
+	// 			var objectId = document.createTextNode(formattedTime);
+	// 			cell1.appendChild(objectId);
 
-				var cell2 = newRow.insertCell(1);
-				var objectId = document.createTextNode(object.why);
-				cell2.appendChild(objectId);
+	// 			var cell2 = newRow.insertCell(1);
+	// 			var objectId = document.createTextNode(object.why);
+	// 			cell2.appendChild(objectId);
 
-				var cell3 = newRow.insertCell(2);
-				var objectId = document.createTextNode(object.change);
-				cell3.appendChild(objectId);
+	// 			var cell3 = newRow.insertCell(2);
+	// 			var objectId = document.createTextNode(object.change);
+	// 			cell3.appendChild(objectId);
 
-				// var cell4 = newRow.insertCell(3);
-				// var objectId = document.createTextNode(object.link);
-				// cell4.appendChild(objectId);
+	// 			// var cell4 = newRow.insertCell(3);
+	// 			// var objectId = document.createTextNode(object.link);
+	// 			// cell4.appendChild(objectId);
 
-				if (object.change == "minor") {
-					newRow.style.backgroundColor = '#FFFF00';
-				} else if (object.change == "major") {
-					newRow.style.backgroundColor = '#02BBBB';
-				} else if (object.change == "redir") {
-					newRow.style.backgroundColor = '#D3D3D3';
-				} else if (object.change == "404") {
-					newRow.style.backgroundColor = '#FF0000';
-				}
-			}
-		}
-		createDataTable();
-	}
+	// 			if (object.change == "minor") {
+	// 				newRow.style.backgroundColor = '#FFFF00';
+	// 			} else if (object.change == "major") {
+	// 				newRow.style.backgroundColor = '#02BBBB';
+	// 			} else if (object.change == "redir") {
+	// 				newRow.style.backgroundColor = '#D3D3D3';
+	// 			} else if (object.change == "404") {
+	// 				newRow.style.backgroundColor = '#FF0000';
+	// 			}
+	// 		}
+	// 	}
+	// 	createDataTable();
+	// }
 
 </script>
 </div>
