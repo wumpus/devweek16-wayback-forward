@@ -75,6 +75,8 @@
 </div>
 
 <script type="text/javascript">
+	var globalWhy = {};
+
 	$(document).ready(function() {
 		setupAjaxCall();
 
@@ -90,6 +92,7 @@
 		$('#submit').click(function() {
 			var websiteUrl = document.getElementById("search").value;
 			globalUrl = websiteUrl;
+			globalWhy = {};
 	        setWebsiteName("loading...");
 			$.getJSON("getinfo", {
 				url: websiteUrl
@@ -110,7 +113,7 @@
 		var second = str.substring(12, 14);
 		var milliseconds = 0;
 
-		var newDate = new Date(year, month, day, hour, minute, second, milliseconds);
+		var newDate = new Date(year, parseInt(month) - 1, parseInt(day), hour, minute, second, milliseconds);
 		return newDate;
 	}
 
@@ -138,6 +141,8 @@
 			} else if (data[i].change == "404") {
 				newData[4].dates.push(newDate)
 			}
+
+			globalWhy[data[i].date] = data[i].why;
 		}
 
 		var testData = [
@@ -159,13 +164,12 @@
 			})
 			.start(newDate)
 			.eventHover(function(el) {
-	console.log('entered eventHover callback');
 				var series = el.parentNode.firstChild.innerHTML;
 				var timestamp = d3.select(el).data()[0];
 				var waybackUrl = returnWaybackLink(globalUrl, timestamp);
-	console.log('waybackurl is ' + waybackUrl);
-				var link = '<a href="' + waybackUrl + '">' + timestamp + '</a>';
-	console.log('link is ' + link);
+				var waybackTimestamp = getWaybackTimestamp(timestamp);
+				var why = globalWhy[waybackTimestamp];
+				var link = '<a href="' + waybackUrl + '">' + timestamp + '</a><br />(why: ' + why + ')';
 				document.getElementById('hovering').innerHTML = link;
 			})
   			.hasTopAxis(true);
@@ -178,9 +182,13 @@
 	function zfill(num, len) {return (Array(len).join("0") + num).slice(-len);}
 
 	function returnWaybackLink(url, date) {
+		return "https://web.archive.org/web/" + getWaybackTimestamp(date) + "/" + url;
+	}
+
+	function getWaybackTimestamp(date) {
 		var year = date.getFullYear();
 		var month = date.getMonth() + 1; // omg what were they thinking
-		var day = date.getDay();
+		var day = date.getDate(); // who the fuck named these?
 		var hours = date.getHours();
 		var minutes = date.getMinutes();
 		var seconds = date.getSeconds();
@@ -191,7 +199,7 @@
 				 zfill(hours, 2) +
 				 zfill(minutes, 2) +
 				 zfill(seconds, 2);
-		return "https://web.archive.org/web/" + datestring + "/" + url;
+		return datestring;
 	}
 
 	function setWebsiteName(name) {
