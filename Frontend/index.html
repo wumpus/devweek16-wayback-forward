@@ -22,9 +22,7 @@
 
 <div class="scrollable-table">
 
-	<!-- <h1 id="title">Wayback Forward</h1> -->
-
-	<div id="box">
+	<div id="box" class"hoverClass">
 	  <p id="flashlight">
 	    <span id="flash">Wayback</span>
 	    <span id="light">Forward</span>
@@ -39,7 +37,6 @@
 	<h1 id="websiteName"></h1><br>
 
 	<div id="table-holder">
-
 	</div>
 
 	<h3>
@@ -79,6 +76,7 @@
 
 	$(document).ready(function() {
 		setupAjaxCall();
+		$('#box').toggleClass('hoverClass');
 
 		// testing stuff
 		// alert("window loaded");
@@ -94,6 +92,7 @@
 			globalUrl = websiteUrl;
 			globalWhy = {};
 	        setWebsiteName("loading...");
+	        $('#box').toggleClass('hoverClass');
 			$.getJSON("getinfo", {
 				url: websiteUrl
 			}, function(sdata) {
