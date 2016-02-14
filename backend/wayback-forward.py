@@ -19,9 +19,9 @@ def pick_collection(collections):
     for c in collections:
         if c.startswith('alexacrawls'):
             return c
-        if c.startswith('survey'):
-            return c
         if c.startswith('wide'):
+            return c
+        if c.startswith('survey'):
             return c
         if c.startswith('shallow'):
             return c
@@ -52,7 +52,7 @@ def pick_collection(collections):
         if c.startswith('geocities'):
             return c
 
-        # these are here to keep things silent
+        # these are here to be silently converted to 'unknown' ... need to ask about them
         if c.startswith('nsdlweb'):
             return None
         if c.startswith('customcrawlservices'):
@@ -87,7 +87,6 @@ if os.environ.get('BOTTLE_CHILD') or not reloader:
               break
 
     cdx_server = os.environ.get('CDXSERVER', cdx_server) # let user override
-
 
 @route('/')
 def front_page():
@@ -124,7 +123,7 @@ def getinfo():
     req.add_header('Cookie', 'cdx_auth_token='+cdx_secret)
 
     with urllib.request.urlopen(req) as response:
-        lines = response.read().decode('utf-8').splitlines()
+        lines = response.read().decode('utf-8').splitlines() # yeah this is really 7-bit ascii with % encoding
 
     table = []
 
@@ -133,10 +132,14 @@ def getinfo():
         surt = fields[0]
         date = fields[1]
         orig = fields[2]
+        rec  = fields[3]
         code = fields[4]
         sha1 = fields[5]
-        length = fields[8]
+        length = fields[8] # this is the lenth of the content plus the WARC header!
         item, filename = fields[10].split('/', maxsplit=1)
+
+        if rec == 'warc/revisit':
+            continue
 
         # begone: 302 redirs from www->non and non->www, 301 redirs for foo to foo/
         if code.startswith('3'):
@@ -182,6 +185,7 @@ def getinfo():
             change = 'redir'
         elif row['sha1'] != last_200_sha1:
             change = 'minor'
+            # note -- lengths bounce around because they include the WARC header.
             try:
                 diff = abs(int(last_200_length) - int(row['length']))
             except:
@@ -190,13 +194,12 @@ def getinfo():
             # when in doubt, use the worst available algorithm!
             if diff > 500:
                 change = 'major'
-            print('date', row['date'], change, 'change, diff is', diff)
             last_200_sha1 = row['sha1']
             last_200_length = row['length']
         else:
             change = 'none'
-            last_200_sha1 = row['sha1']
-            last_200_length = row['length']
+            last_200_sha1 = row['sha1'] # should be identical
+            last_200_length = row['length'] # might vary a little due to WARC headers
         row['change'] = change
 
     captures = []
