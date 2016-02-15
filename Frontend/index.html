@@ -22,7 +22,7 @@
 
 <div class="scrollable-table">
 
-	<div id="box" class"hoverClass">
+	<div id="box" class="hoverClass">
 	  <p id="flashlight">
 	    <span id="flash">Wayback</span>
 	    <span id="light">Forward</span>
@@ -30,7 +30,7 @@
 	</div>
 
 	<form id="searchbox" >
-	    <input id="search" type="text" placeholder="Type here">
+		<input id="search" type="text" placeholder="Type here" onkeypress="return runScript(event)">
 	    <input id="submit" type="button" value="Search">
 	</form>
 
@@ -101,6 +101,12 @@
 				setWebsiteName(websiteUrl);
 			});
 		});
+	}
+
+	function runScript(e) {
+		if (e.keyCode == 13) {
+			setupAjaxCall();
+		}
 	}
 
 	function formatTime(str) {
